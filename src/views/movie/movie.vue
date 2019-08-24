@@ -133,45 +133,42 @@ export default {
             this.type = 'top'
         },
         getMovieInTheaters(){
-            let params = {
-                //去掉市字
-                city: this.city.slice(0,this.city.length-1),
-                start: 0,
-                count: 1000 
-            }
-            getMovieInTheaters(params).then(res => {
-                this.movies = res.data.subjects;
+            let city = this.city.slice(0,this.city.length-1);
+            getMovieInTheaters(city).then(data => {
+                this.movies = data.subjects;
                 this.movieLoading = false;
+                this.getComingSoonMovie();
             });
         },
         getComingSoonMovie(){
             this.comingSoonLoading = true;
-            getComingSoonMovie(this.comingSoonMovieIndex,MOVIE_COUNT).then(res => {
+            getComingSoonMovie(this.comingSoonMovieIndex,MOVIE_COUNT).then(data => {
                 this.comingSoonMovieIndex += MOVIE_COUNT;
-                // this.comingSoonMovie = [...this.comingSoonMovie, ...res.data.subjects];
-                this.comingSoonMovie.push(...res.data.subjects);
+                this.comingSoonMovie.push(...data.subjects);
                 this.comingSoonMovieInit = false;
                 this.comingSoonLoading = false;
-                if(this.comingSoonMovieIndex >= res.data.total)this.comingSoonFinished = true;
+                if(this.comingSoonMovieIndex >= data.total)this.comingSoonFinished = true;
+                this.getTop250Movie();
             });
         },
         getTop250Movie(){
             this.top250Loading = true;
-            getTop250Movie(this.top250MovieIndex,MOVIE_COUNT).then(res => {
+            getTop250Movie(this.top250MovieIndex,MOVIE_COUNT).then(data => {
                 this.top250MovieIndex += MOVIE_COUNT;
-                //this.top250Movie = [...this.top250Movie, ...res.data.subjects];
-                this.top250Movie.push(...res.data.subjects);
+                this.top250Movie.push(...data.subjects);
                 this.top250MovieInit = false;
                 this.top250Loading = false;
-                if(this.top250MovieIndex >= res.data.total)this.top250Finished = true;
+                if(this.top250MovieIndex >= data.total)this.top250Finished = true;
+            }).catch(err => {
+                console.log(err);
             })
         },
         selectMovie(movie){
             this.movieDetail = movie;
             this.hasSelectd = true;
             this.showMovieDetail = true;
-            getMovieDetail(movie.id).then(res => {
-                this.movieDetail = res.data;
+            getMovieDetail(movie.id).then(data => {
+                this.movieDetail = data;
             })
         },
         hideMovieDetail(){
@@ -180,9 +177,6 @@ export default {
     },
     mounted(){
         this.getMovieInTheaters();
-        this.getComingSoonMovie();
-        this.getTop250Movie();
-        
     }
 }
 </script>
