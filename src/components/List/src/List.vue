@@ -66,11 +66,18 @@ export default {
                     transform: 'translateX('+ left + 'px)',
                     background: this.lineColor
                 }
+                console.log("setline");
             })
         }
     },
     mounted(){
         this.setLine();
+        window.onresize = function(){
+            this.setLine();
+        }.bind(this);
+    },
+    destroyed(){
+        window.onresize = null;
     },
     watch: {
         currentValue(){
@@ -96,6 +103,7 @@ export default {
     line-height: 40px;
     text-align: center;
     flex-grow: 1;
+    font-size: 16px;
 }
 
 </style>

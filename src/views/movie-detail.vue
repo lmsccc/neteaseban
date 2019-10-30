@@ -16,7 +16,7 @@
                 <h4 class="movie-title">{{ movie.title }}</h4>
                 <div class="movie-info-item">
                     <span>{{ movie.year }} </span>
-                    <span v-for="genres in movie.genres" :key="genres">{{ genres }} </span>
+                    <span v-for="(genres,index) in movie.genres" :key="index">{{ genres }} </span>
                 </div>
                 <div class="movie-info-item">原名：{{ movie.original_title }}</div>
                 <div class="movie-info-item">上映时间：{{ getChinaPubdates(movie.pubdates)[0] }}</div>
@@ -25,7 +25,7 @@
             <div class="movie-rate">
                 <div class="title">豆瓣评分</div>
                 <div class="score">{{ movie.rating.average }}</div>
-                <movierate :rate="movie.rating.average" class="rate"></movierate>
+                <movierate :rate="movie.rating.average" :totalRate=10 class="rate"></movierate>
                 <div class="collect">{{ movie.ratings_count }}人</div>
             </div>
         </div>
@@ -47,19 +47,19 @@
             <ul class="people-list">
                 <li
                     class="people-list-directoe"
-                    v-for="director in movie.directors"
-                    :key="director.id"
+                    v-for="(director,index) in directors"
+                    :key="index + director.id"
                 >
-                    <img :src="director.avatars.small" />
+                    <img :src="director.avatars.large"  />
                     <div>导演</div>
                     <div>{{ director.name }}</div>
                 </li>
                 <li
                     class="people-list-cast"
-                    v-for="cast in movie.casts"
-                    :key="cast.id"
+                    v-for="(cast,index) in casts"
+                    :key="cast.id + index"
                 >
-                    <img :src="cast.avatars.small" />
+                    <img :src="cast.avatars.medium" v-if="cast.avatars" />
                     <div>演员</div>
                     <div>{{ cast.name }}</div>
                 </li>
@@ -72,8 +72,8 @@
                     <ul class="comment-list">
                         <li 
                             class="comment"
-                            v-for="comment in movie.popular_comments"
-                            :key="comment.id"
+                            v-for="(comment,index) in movie.popular_comments"
+                            :key="index"
                         >   
                             <div><img :src="comment.author.avatar"></div>
                             <div class="comment-content">
@@ -89,8 +89,8 @@
                     <ul class="comment-list">
                         <li 
                             class="comment"
-                            v-for="comment in movie.popular_reviews"
-                            :key="comment.id"
+                            v-for="(comment,index) in movie.popular_reviews"
+                            :key="index"
                         >   
                             <div><img :src="comment.author.avatar"></div>
                             <div class="comment-content">
@@ -111,19 +111,30 @@
 const SUMMARY_MAX_WORD = 65;
 
 import movierate from "../components/MovieRate";
+import {getMovieDetail} from "@/api/douban"
 
 export default {
     data() {
         return {
             isSummaryExpand: false,
-            currentTag: "短评"
+            currentTag: "短评",
+            // movie: {
+            //     //此处为了防止初始化组件的时候数据还没回来，读不到数据报错
+            //     images:'',
+            //     pubdates: [],
+            //     durations: [],
+            //     rating: {},
+            //     directors: [],
+            //     casts: []
+            // }
+            movie: this.data
         };
     },
     components: {
         movierate
     },
     props: {
-        movie: {
+        data: {
             type: Object,
             require: true
         }
@@ -137,6 +148,16 @@ export default {
             } else {
                 return summary;
             }
+        },
+        directors(){
+            return this.movie.directors.filter((director) => {
+                if(director.avatars){return director;}
+            })
+        },
+        casts(){
+            return this.movie.casts.filter((cast) => {
+                if(cast.avatars){return cast;}
+            })
         }
     },
     methods: {
@@ -150,11 +171,24 @@ export default {
             }
         },
         handleBack() {
-            this.$emit("hide");
-            this.isSummaryExpand = false;
+            // this.$emit("hide");
+            // this.isSummaryExpand = false;
+            this.$router.go(-1);
+        }
+    },
+    created() {
+            getMovieDetail(this.movie.id).then( response => {
+                this.movie = response.data;
+            })
+    },
+    watch: {
+        movieID(){
+            getMovieDetail(this.movie.id).then( response => {
+                this.movie = response.data;
+            })
         }
     }
-};
+}
 </script>
 <style scoped>
 .movie-detail {
@@ -165,7 +199,7 @@ export default {
     bottom: 0;
     overflow: auto;
     background-color: #fff;
-    z-index: 10002;
+    z-index: 12;
 }
 .header {
     position: fixed;

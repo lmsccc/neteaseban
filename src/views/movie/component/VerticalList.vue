@@ -1,22 +1,25 @@
 <template>
 <ul class="movie" @scroll="handleScroll" ref="list">
-    <li 
+    <router-link 
         class="movie-item"
-        v-for="movie in movies" :key="movie.id" @click="selectMovie(movie)">
+        v-for="movie in movies" 
+        :key="movie.id"
+        :to="{name: 'movieDetail', params:{data:movie}}"
+        tag="li">
         <img v-lazy="movie.images.small">
         <div class="movie-info">
             <h4 class="movie-name">{{ movie.title }}</h4>
             <movierate class="movie-rate" :rate="movie.rating.average"></movierate>
             <span>{{ movie.rating.average }}</span>
             <div class="movie-director">
-                导演：<span v-for="director in movie.directors" :key="director.id">{{ director.name }} </span>
+                导演：<span v-for="(director,index) in movie.directors" :key="index">{{ director.name }} </span>
             </div>
             <div class="movie-cast">
-                主演：<span v-for="cast in movie.casts" :key="cast.id">{{ cast.name }} </span>
+                主演：<span v-for="(cast,index) in movie.casts" :key="index">{{ cast.name }} </span>
             </div>
             <div v-if="movie.collect_count" class="movie-has-watched">{{ movie.collect_count }}人看过</div>
         </div>
-    </li>
+    </router-link>
     <span class="loading" v-show="value">加载中...</span>
     <span class="finished" v-show="finished">{{ finishedText }}</span>
 </ul>    
@@ -92,8 +95,9 @@ export default {
     vertical-align: top;
 }
 .movie-item{
-    padding: 10px;
+    padding: 5px 10px 5px 10px;
     display: flex;
+    font-size: 16px;
 }
 .movie-info{
     display: inline-block;

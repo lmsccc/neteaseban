@@ -12,19 +12,36 @@ export default new Router({
         {   
             path: '/main',
             component: () => import('./views/layout/index.vue'),
-            redirect: '/main/movie',
+            redirect: 'main/movie',
             children: [
                 {
                     path: 'movie',
-                    component: () => import('./views/movie/movie.vue')
+                    name: 'movie',
+                    component: () => import('./views/movie/movie.vue'),
+                    props: true
                 },
                 {
                     path: 'me',
-                    component: () => import('./views/me.vue')
+                    name: 'me',
+                    component: () => import('./views/me.vue'),
                 },
                 {
                     path: 'music',
-                    component: () => import('./views/music-list.vue')
+                    name: 'musicList',
+                    component: () => import('./views/music-list.vue'),
+                    props: true
+                },
+                {
+                    path: 'movieDetail',
+                    name: 'movieDetail',
+                    component: () => import('./views/movie-detail'),
+                    props: true,
+                },
+                {
+                    path: 'musicDetail',
+                    name: 'musicDetail',
+                    component: () => import('./views/music-detail'),
+                    props: true
                 }
             ]
         },

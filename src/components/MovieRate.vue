@@ -1,10 +1,10 @@
 <template>
     <div class="rate">
-        <i class="iconfont" :class="{on: rate > 0}">&#xe64a;</i>
-        <i class="iconfont" :class="{on: rate >= 2}">&#xe64a;</i>
-        <i class="iconfont" :class="{on: rate >= 4}">&#xe64a;</i>
-        <i class="iconfont" :class="{on: rate >= 6}">&#xe64a;</i>
-        <i class="iconfont" :class="{on: rate >= 8}">&#xe64a;</i>
+        <i class="iconfont" :class="{on: rate/totalRate > 0}">&#xe64a;</i>
+        <i class="iconfont" :class="{on: rate/totalRate >= 0.2}">&#xe64a;</i>
+        <i class="iconfont" :class="{on: rate/totalRate >= 0.4}">&#xe64a;</i>
+        <i class="iconfont" :class="{on: rate/totalRate >= 0.7}">&#xe64a;</i>
+        <i class="iconfont" :class="{on: rate/totalRate >= 0.9}">&#xe64a;</i>
     </div>
 </template>
 <script>
@@ -13,6 +13,10 @@ export default {
         rate:{
             type: Number,
             default: 0
+        },
+        totalRate:{
+            type: Number,
+            default: 10
         }
     }
 }

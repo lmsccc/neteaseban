@@ -1,6 +1,8 @@
 <template>
     <div>
-        <router-view></router-view>   
+        <keep-alive include="movie,musicList">
+            <router-view></router-view>
+        </keep-alive>   
     </div>
      
 </template>

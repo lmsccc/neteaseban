@@ -24,12 +24,16 @@
                     class="movie-loading">
             </div>
             <ul class="banner-movie">
-                <li v-for="(movie,index) in movies" :key="index" @click="selectMovie(movie)">
+                <router-link 
+                    v-for="(movie,index) in movies" 
+                    :key="index" 
+                    :to="{name: 'movieDetail', params:{data:movie}}"
+                    tag="li">
                     <img v-lazy="movie.images.small">
                     <div class="movie-name">{{ movie.title }}</div>
-                    <movierate :rate="movie.rating.average" class="movierate"></movierate>
+                    <movierate :rate="movie.rating.average" :totalRate=10 class="movierate"></movierate>
                     <span>{{ movie.rating.average }}</span>
-                </li>
+                </router-link>
             </ul>
         </div>
         <div class="movie-content">
@@ -41,7 +45,6 @@
                         :finished="comingSoonFinished"
                         v-model="comingSoonLoading"
                         @load="getComingSoonMovie"
-                        @selectMovie="selectMovie"
                         ></verticalList>
                     <img 
                         src="@/assets/loading.gif" 
@@ -55,7 +58,6 @@
                         :finished="top250Finished"
                         v-model="top250Loading"
                         @load="getTop250Movie"
-                        @selectMovie="selectMovie"
                         ></verticalList>
                     <img 
                         src="@/assets/loading.gif" 
@@ -64,24 +66,23 @@
                 </list-item>
             </list>
         </div>
-        <movie-detail-page 
+        <!-- <movie-detail-page 
             class="movie-detail" 
             v-if="hasSelectd" 
             v-show="showMovieDetail" 
             :movie="movieDetail"
-            @hide="hideMovieDetail"></movie-detail-page>
+            @hide="hideMovieDetail">
+        </movie-detail-page> -->
     </div>
 </template>
 <script>
-import '@/api/douban'
 import movierate from '@/components/MovieRate.vue'
 import locationMixin from '@/mixins/location'
-import movieDetailPage from '../movie-detail.vue'
 import { 
     getMovieInTheaters, 
     getComingSoonMovie, 
     getTop250Movie,
-    getMovieDetail
+    // getMovieDetail
 } from '@/api/douban'
 
 import verticalList from './component/VerticalList'
@@ -90,10 +91,10 @@ const MOVIE_COUNT = 10;
 
 export default {
     mixins: [locationMixin],
+    name: 'movie',
     components: {
         movierate,
         verticalList,
-        movieDetailPage
     },
     computed:{
         searchButton(){
@@ -110,6 +111,7 @@ export default {
             currentTab: '最近上映',
             showSearch: false,
             movieLoading: true,
+            //决定其加载状态
             comingSoonMovieInit: true,
             top250MovieInit: true,
             //每次取10条结果，下拉继续获取，index为获取了多少部电影了
@@ -119,10 +121,10 @@ export default {
             top250Finished: false,
             comingSoonLoading: false,
             top250Loading: false,
-            showMovieDetail: false,
+            // showMovieDetail: false,
             //默认给电影详情页赋城市电影的第一部
-            movieDetail: {},
-            hasSelectd: false
+            // movieDetail: {},
+            // hasSelectd: false
         }
     },
     methods: {
@@ -134,49 +136,47 @@ export default {
         },
         getMovieInTheaters(){
             let city = this.city.slice(0,this.city.length-1);
-            getMovieInTheaters(city).then(data => {
-                this.movies = data.subjects;
+            getMovieInTheaters(city).then(response => {
+                this.movies = response.data.subjects;
                 this.movieLoading = false;
-                this.getComingSoonMovie();
             });
         },
         getComingSoonMovie(){
             this.comingSoonLoading = true;
-            getComingSoonMovie(this.comingSoonMovieIndex,MOVIE_COUNT).then(data => {
+            getComingSoonMovie(this.comingSoonMovieIndex,MOVIE_COUNT).then(response => {
                 this.comingSoonMovieIndex += MOVIE_COUNT;
-                this.comingSoonMovie.push(...data.subjects);
+                this.comingSoonMovie.push(...response.data.subjects);
                 this.comingSoonMovieInit = false;
                 this.comingSoonLoading = false;
-                if(this.comingSoonMovieIndex >= data.total)this.comingSoonFinished = true;
-                this.getTop250Movie();
+                if(this.comingSoonMovieIndex >= response.data.total)this.comingSoonFinished = true;
             });
         },
         getTop250Movie(){
             this.top250Loading = true;
-            getTop250Movie(this.top250MovieIndex,MOVIE_COUNT).then(data => {
+            getTop250Movie(this.top250MovieIndex,MOVIE_COUNT).then(response => {
                 this.top250MovieIndex += MOVIE_COUNT;
-                this.top250Movie.push(...data.subjects);
+                this.top250Movie.push(...response.data.subjects);
                 this.top250MovieInit = false;
                 this.top250Loading = false;
-                if(this.top250MovieIndex >= data.total)this.top250Finished = true;
-            }).catch(err => {
-                console.log(err);
+                if(this.top250MovieIndex >= response.data.total)this.top250Finished = true;
             })
         },
-        selectMovie(movie){
-            this.movieDetail = movie;
-            this.hasSelectd = true;
-            this.showMovieDetail = true;
-            getMovieDetail(movie.id).then(data => {
-                this.movieDetail = data;
-            })
-        },
-        hideMovieDetail(){
-            this.showMovieDetail = false;
-        }
+        // selectMovie(movie){
+        //     this.movieDetail = movie;
+        //     getMovieDetail(movie.id).then(data => { 
+        //         this.movieDetail = data;
+        //     })
+        //     this.hasSelectd = true;
+        //     this.showMovieDetail = true;    
+        // },
+        // hideMovieDetail(){
+        //     this.showMovieDetail = false;
+        // }
     },
     mounted(){
         this.getMovieInTheaters();
+        this.getTop250Movie();
+        this.getComingSoonMovie();
     }
 }
 </script>
@@ -232,18 +232,18 @@ export default {
     overflow-x: scroll;
     white-space: nowrap;
     text-align: center;
+    font-size: 14px;
 }
 .banner-movie li{
     display: inline-block;
     margin: 10px 0 10px 0;
-    width: 120px;
+    width: 110px;
 }
 .banner-movie img{
     height: 142px;
     width: 100px;
 }
 .banner-movie .movie-name{
-    font-size: 14px;
     text-overflow: ellipsis;
     overflow: hidden;
 }

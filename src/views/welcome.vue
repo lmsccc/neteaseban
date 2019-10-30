@@ -51,7 +51,7 @@ export default {
     right: 0;
     top: 0;
     bottom: 0;
-    z-index: 10001;
+    z-index: 11;
     background-color: #fff;
 }
 h1{
