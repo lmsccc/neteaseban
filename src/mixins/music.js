@@ -11,7 +11,8 @@ export default {
             'getMusicAuthor',
             'getMusicPic',
             'getStoreMusicList',
-            'getMusicIndex'
+            'getMusicIndex',
+            'getMusicID'
         ]),
     },
     methods: {

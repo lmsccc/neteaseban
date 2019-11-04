@@ -1,11 +1,11 @@
 @font-face {
     font-family: 'iconfont';  /* project id 1319331 */
-    src: url('https://at.alicdn.com/t/font_1319331_4rszbfiriz3.eot');
-    src: url('https://at.alicdn.com/t/font_1319331_4rszbfiriz3.eot?#iefix') format('embedded-opentype'),
-    url('https://at.alicdn.com/t/font_1319331_4rszbfiriz3.woff2') format('woff2'),
-    url('https://at.alicdn.com/t/font_1319331_4rszbfiriz3.woff') format('woff'),
-    url('https://at.alicdn.com/t/font_1319331_4rszbfiriz3.ttf') format('truetype'),
-    url('https://at.alicdn.com/t/font_1319331_4rszbfiriz3.svg#iconfont') format('svg');
+    src: url('//at.alicdn.com/t/font_1319331_ng06s4ifgz.eot');
+    src: url('//at.alicdn.com/t/font_1319331_ng06s4ifgz.eot?#iefix') format('embedded-opentype'),
+    url('//at.alicdn.com/t/font_1319331_ng06s4ifgz.woff2') format('woff2'),
+    url('//at.alicdn.com/t/font_1319331_ng06s4ifgz.woff') format('woff'),
+    url('//at.alicdn.com/t/font_1319331_ng06s4ifgz.ttf') format('truetype'),
+    url('//at.alicdn.com/t/font_1319331_ng06s4ifgz.svg#iconfont') format('svg');
   }
   .iconfont{
       font-family:"iconfont" !important;

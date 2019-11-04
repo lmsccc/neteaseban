@@ -22,7 +22,7 @@ const music = {
     },
     getters: {
         getMusicURL: state => {
-            if(state.music){
+            if(state.music.id){
                 return `https://music.163.com/song/media/outer/url?id=${state.music.id}.mp3`;
             }
         },
@@ -42,13 +42,16 @@ const music = {
         },
         getMusicIndex: state => {
             return state.musicIndex;
+        },
+        getMusicID: state => {
+            return state.music.id;
         }
     },
     actions: {
         setMusic({commit},args){
-            commit('SET_MUSIC',args.song);
             if(args.index !== undefined) { commit('SET_MUSIC_INDEX',args.index); }
             if(args.musicList) { commit('SET_MUSIC_LIST',args.musicList); }
+            commit('SET_MUSIC',args.song);
         }
     }
 }

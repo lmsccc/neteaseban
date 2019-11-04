@@ -30,6 +30,7 @@
             </div>
         </div>
 
+        <div class="like-button" :class="{'active-like': isLike === true}" @click="likeMovie">我想看</div>
         <div class="movie-summary">
             <h4 class="title">剧情简介</h4>
             <div class="content">
@@ -111,22 +112,14 @@
 const SUMMARY_MAX_WORD = 65;
 
 import movierate from "../components/MovieRate";
-import {getMovieDetail} from "@/api/douban"
+import {getMovieDetail} from "@/api/douban";
+import {mapState, mapActions} from 'vuex';
 
 export default {
     data() {
         return {
             isSummaryExpand: false,
             currentTag: "短评",
-            // movie: {
-            //     //此处为了防止初始化组件的时候数据还没回来，读不到数据报错
-            //     images:'',
-            //     pubdates: [],
-            //     durations: [],
-            //     rating: {},
-            //     directors: [],
-            //     casts: []
-            // }
             movie: this.data
         };
     },
@@ -140,6 +133,16 @@ export default {
         }
     },
     computed: {
+        isLike(){
+            let index = this.wantToSeeMovie.findIndex(function(item){
+                return item.id === this.movie.id;
+            }.bind(this));
+            if(index > -1){
+                return true;
+            }else{
+                return false;
+            }
+        },
         summary() {
             let summary = this.movie.summary;
             if (!summary) return;
@@ -158,7 +161,10 @@ export default {
             return this.movie.casts.filter((cast) => {
                 if(cast.avatars){return cast;}
             })
-        }
+        },
+        ...mapState({
+            wantToSeeMovie: state => state.collect.wantToSeeMovie
+        })
     },
     methods: {
         getChinaPubdates(pubdates) {
@@ -171,10 +177,15 @@ export default {
             }
         },
         handleBack() {
-            // this.$emit("hide");
-            // this.isSummaryExpand = false;
             this.$router.go(-1);
-        }
+        },
+        likeMovie(){
+            //这个方法可以删也可以加，传入电影即可
+            this.setWantTo(this.movie);
+        },
+        ...mapActions([
+            'setWantTo'
+        ])
     },
     created() {
             getMovieDetail(this.movie.id).then( response => {
@@ -240,6 +251,7 @@ export default {
     padding: 20px;
 }
 .movie-info .movie-title {
+    font-size: 16px;
     margin-bottom: 10px;
 }
 .movie-text {
@@ -334,5 +346,18 @@ export default {
 .comment-time{
     padding-top: 10px;
     color: #777;
+}
+.like-button{
+    border: 1px solid #36c23b;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 17px;
+    color: #36c23b;
+    line-height: 30px;
+    margin: 10px;
+}
+.active-like{
+    background-color: #36c23b;
+    color: #fff;
 }
 </style>

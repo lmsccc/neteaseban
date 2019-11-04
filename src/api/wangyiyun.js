@@ -20,3 +20,11 @@ export function getMusicList(id){
         params
     });
 }
+
+export function getLyric(id){
+    let params = {id};
+    return request({
+        url: BASEURL + '/lyric',
+        params
+    })
+}

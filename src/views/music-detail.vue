@@ -55,7 +55,7 @@ export default {
         init(){
             getMusicList(this.musicID).then((response) => {
                 this.musicList = response.data.playlist.tracks;
-                this.SET_MUSIC_LIST(this.musicList);
+                // this.SET_MUSIC_LIST(this.musicList);
             })
         },
         handleSelectSong(song,index){
@@ -75,7 +75,7 @@ export default {
 </script>
 <style scoped>
 .music-detail{
-    position: fixed;
+    position: absolute;
     top: 0;
     bottom: 0;
     left: 0;

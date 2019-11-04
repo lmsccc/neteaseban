@@ -8,6 +8,12 @@
                     <span class="song-title">{{ getMusicTitle }}</span><br>
                     <span class="song-author">{{ getMusicAuthor[0].name }}</span>
                 </div> 
+                <i 
+                    class="iconfont like-btn"
+                     :class="{'like-active': isLike === true}" 
+                     @click="collectSong"
+                     
+                     >&#xe83f;</i>
             </div>
 
             <div class="center">
@@ -15,7 +21,13 @@
                     <img  v-lazy="getMusicPic">
                 </div>
                 <div class="music-lyrics" v-show="isShowLyrics" @click="isShowLyrics = false">
-                    歌词歌词歌词歌词
+                    <div 
+                        class="lyric-item" 
+                        v-for="(lyric,index) in lyricData" 
+                        :key="index"
+                        >
+                        {{ lyric.content }}
+                    </div>
                 </div>
             </div>
             
@@ -72,7 +84,6 @@
             class="mini-player" 
             v-show="!isFullScreen" 
             @click="isFullScreen = true"
-            :style="{left: miniPlayerleft + 'px', top: miniPlayerTop + 'px'}"
             v-drag
             >
             <div>
@@ -99,6 +110,11 @@
 <script>
 import musicMixin from '@/mixins/music'
 import progressBar from '../components/progress'
+import { getLyric } from '@/api/wangyiyun'
+import {handleLyricData} from '@/util/handleLyricData'
+
+import {mapActions, mapState} from 'vuex'
+
 export default {
     mixins: [musicMixin],
     components: {
@@ -113,16 +129,27 @@ export default {
             isShowList: false,
             currentTime: 0,
             duration: 0,
-            disX: 0,//记录触摸的起始点
-            disY: 0,
-            miniPlayerleft: 0,
-            miniPlayerTop: 100
+            lyricData: [],
         }
     },
     computed: {
         percent() {
             return this.currentTime / this.duration;
-        }
+        },
+        isLike(){
+            let index = this.collectMusic.findIndex(function(item){
+                return item.id === this.music.id;
+            }.bind(this));
+            if(index > -1){
+                return true;
+            }else{
+                return false;
+            }
+        },
+        ...mapState({
+            collectMusic: state => state.collect.collectMusic,
+            music: state => state.music.music
+        })
     },
     methods: {
         pause() {
@@ -159,13 +186,15 @@ export default {
             this.currentTime = e.target.currentTime;
         },
         onCanPlay(e){
+            
             //兼容小米浏览器
             let timer = setInterval(() => {
                 this.duration = e.target.duration
                 if(this.duration) {
                     clearInterval(timer);
                 }
-            },150)
+            },150);
+            this.getLyric();
         },
         onEnded(){
             if(this.mode === "SINGLE_LOOP"){
@@ -191,6 +220,19 @@ export default {
                 } 
                 this.setMusic(args);
         },
+        getLyric(){
+            getLyric(this.getMusicID).then(res => {
+                if(res.status === 200){
+                    this.lyricData = handleLyricData(res.data.lrc.lyric);
+                }
+            });
+        },
+        collectSong(){
+            this.setCollectMusic(this.music);
+        },
+        ...mapActions([
+            'setCollectMusic'
+        ])
     }
 }
 </script>
@@ -244,8 +286,12 @@ export default {
 }
 .center{
     text-align: center;
-    margin-top: 20px;
-    height: 70%;
+    position: absolute;
+    top: 65px;
+    left: 0px;
+    right: 0px;
+    bottom: 150px;
+
 }
 @keyframes rotate{
     0% { transform: rotate(0deg) }
@@ -253,7 +299,7 @@ export default {
     100%{ transform: rotate(360deg) }
 } 
 .music-circle img{
-    margin-top: 100px;
+    margin-top: 10%;
     width: 300px;
     height: 300px;
     border-radius: 60%;
@@ -313,6 +359,8 @@ export default {
 }
 .mini-player{
     position: fixed;
+    left: 0px;
+    top: 200px;
     height: 50px;
     width: 230px;
     background-color:rgba(65, 63, 63, 0.8);
@@ -330,10 +378,24 @@ export default {
 .mini-player h4{
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: 2px;
 }
 .mini-player i{
     position: absolute;
     right: 10px;
     padding-top: 8px;
+}
+.music-lyrics{
+    height: 100%;
+    overflow: auto;
+}
+.lyric-item{
+    padding: 10px 0;
+}
+.like-active{
+    color: rgb(229,64,79) !important;
+}
+.header .like-btn{
+    float: right;
 }
 </style>

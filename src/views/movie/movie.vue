@@ -66,13 +66,6 @@
                 </list-item>
             </list>
         </div>
-        <!-- <movie-detail-page 
-            class="movie-detail" 
-            v-if="hasSelectd" 
-            v-show="showMovieDetail" 
-            :movie="movieDetail"
-            @hide="hideMovieDetail">
-        </movie-detail-page> -->
     </div>
 </template>
 <script>
@@ -82,10 +75,9 @@ import {
     getMovieInTheaters, 
     getComingSoonMovie, 
     getTop250Movie,
-    // getMovieDetail
 } from '@/api/douban'
 
-import verticalList from './component/VerticalList'
+import verticalList from '@/components/VerticalList.vue'
 
 const MOVIE_COUNT = 10;
 
@@ -121,10 +113,6 @@ export default {
             top250Finished: false,
             comingSoonLoading: false,
             top250Loading: false,
-            // showMovieDetail: false,
-            //默认给电影详情页赋城市电影的第一部
-            // movieDetail: {},
-            // hasSelectd: false
         }
     },
     methods: {
@@ -161,17 +149,6 @@ export default {
                 if(this.top250MovieIndex >= response.data.total)this.top250Finished = true;
             })
         },
-        // selectMovie(movie){
-        //     this.movieDetail = movie;
-        //     getMovieDetail(movie.id).then(data => { 
-        //         this.movieDetail = data;
-        //     })
-        //     this.hasSelectd = true;
-        //     this.showMovieDetail = true;    
-        // },
-        // hideMovieDetail(){
-        //     this.showMovieDetail = false;
-        // }
     },
     mounted(){
         this.getMovieInTheaters();
