@@ -1,5 +1,5 @@
 import request from '../util/request';
-const BASEURL = 'https://www.lmsccc.xyz:10000'
+const BASEURL = 'http://www.lmsccc.xyz:10001'
 
 export function getBanner(){
     return request({
